@@ -5,37 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matching Status Page</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        .user {
-            margin: 10px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .user span {
-            margin-right: 10px;
-        }
-        .status {
-            margin-left: 10px;
-            padding: 5px 15px;
-            border: none;
-            cursor: pointer;
-            color: white;
-            border-radius: 5px;
-        }
-        .matching {
-            background-color: green;
-        }
-        .not-matching {
-            background-color: red;
-        }
-        #user-list {
-            margin-top: 20px;
-        }
+        /* Add your styles here */
     </style>
 </head>
 <body>
@@ -48,43 +18,54 @@
         <!-- Users will appear here -->
     </div>
 
+    <!-- Add Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+
     <script>
+        // Your Firebase configuration object
+        const firebaseConfig = {
+            apiKey: "AIzaSyAUlLXs0QE-BdWsLP8svTXdATifO3vPTwE",
+            authDomain: "aa-matching-status.firebaseapp.com",
+            databaseURL: "https://aa-matching-status-default-rtdb.firebaseio.com",
+            projectId: "aa-matching-status",
+            storageBucket: "aa-matching-status.appspot.com",
+            messagingSenderId: "1091110952452",
+            appId: "1:1091110952452:web:cbeb8b07369d0f137c5f51"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Example: Adding functionality for user list
         const addUserButton = document.getElementById('add-user');
         const nameInput = document.getElementById('name');
         const userList = document.getElementById('user-list');
 
+        // Listen for changes in the database
+        db.ref('users').on('value', (snapshot) => {
+            const users = snapshot.val();
+            userList.innerHTML = '';
+
+            for (const id in users) {
+                const user = users[id];
+                const userDiv = document.createElement('div');
+                userDiv.textContent = `${user.name} - ${user.status}`;
+                userList.appendChild(userDiv);
+            }
+        });
+
+        // Add user to the database
         addUserButton.addEventListener('click', () => {
             const name = nameInput.value.trim();
-            if (name === '') {
-                alert('Please enter a name.');
-                return;
-            }
+            if (!name) return alert('Enter a valid name.');
 
-            const userDiv = document.createElement('div');
-            userDiv.classList.add('user');
-
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = name;
-
-            const statusButton = document.createElement('button');
-            statusButton.textContent = 'Not Matching';
-            statusButton.classList.add('status', 'not-matching');
-
-            statusButton.addEventListener('click', () => {
-                if (statusButton.classList.contains('not-matching')) {
-                    statusButton.textContent = 'Matching';
-                    statusButton.classList.remove('not-matching');
-                    statusButton.classList.add('matching');
-                } else {
-                    statusButton.textContent = 'Not Matching';
-                    statusButton.classList.remove('matching');
-                    statusButton.classList.add('not-matching');
-                }
+            const userRef = db.ref('users').push();
+            userRef.set({
+                name: name,
+                status: 'Not Matching'
             });
-
-            userDiv.appendChild(nameSpan);
-            userDiv.appendChild(statusButton);
-            userList.appendChild(userDiv);
 
             nameInput.value = '';
         });
