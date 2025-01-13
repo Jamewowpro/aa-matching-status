@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Status Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        .user {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .user span {
+            margin-right: 10px;
+        }
+        .status {
+            margin-left: 10px;
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            border-radius: 5px;
+        }
+        .matching {
+            background-color: green;
+        }
+        .not-matching {
+            background-color: red;
+        }
+        #user-list {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Matching Status Page</h1>
+    <div>
+        <input type="text" id="name" placeholder="Enter your name" />
+        <button id="add-user">Add</button>
+    </div>
+    <div id="user-list">
+        <!-- Users will appear here -->
+    </div>
+
+    <script>
+        const addUserButton = document.getElementById('add-user');
+        const nameInput = document.getElementById('name');
+        const userList = document.getElementById('user-list');
+
+        addUserButton.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (name === '') {
+                alert('Please enter a name.');
+                return;
+            }
+
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('user');
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = name;
+
+            const statusButton = document.createElement('button');
+            statusButton.textContent = 'Not Matching';
+            statusButton.classList.add('status', 'not-matching');
+
+            statusButton.addEventListener('click', () => {
+                if (statusButton.classList.contains('not-matching')) {
+                    statusButton.textContent = 'Matching';
+                    statusButton.classList.remove('not-matching');
+                    statusButton.classList.add('matching');
+                } else {
+                    statusButton.textContent = 'Not Matching';
+                    statusButton.classList.remove('matching');
+                    statusButton.classList.add('not-matching');
+                }
+            });
+
+            userDiv.appendChild(nameSpan);
+            userDiv.appendChild(statusButton);
+            userList.appendChild(userDiv);
+
+            nameInput.value = '';
+        });
+    </script>
+</body>
+</html>
