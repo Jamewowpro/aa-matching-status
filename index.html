@@ -120,5 +120,27 @@
             nameInput.value = '';
         });
     </script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+
+<script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD55ew8TgrkTEYK3H3oB3KNFNUmY-cP9O4",
+        authDomain: "matching-status-sync.firebaseapp.com",
+        databaseURL: "https://matching-status-sync-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "matching-status-sync",
+        storageBucket: "matching-status-sync.firebasestorage.app",
+        messagingSenderId: "681685311102",
+        appId: "1:681685311102:web:54a0486b889fae048d822f"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    console.log("Firebase initialized successfully:", app);
+</script>
 </body>
 </html>
