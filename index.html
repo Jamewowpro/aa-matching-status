@@ -4,6 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matching Status Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        .user {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .user span {
+            margin-right: 10px;
+        }
+        .status {
+            margin-left: 10px;
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            border-radius: 5px;
+        }
+        .matching {
+            background-color: green;
+        }
+        .not-matching {
+            background-color: red;
+        }
+        .timer {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        #user-list {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>Matching Status Page</h1>
@@ -11,50 +48,76 @@
         <input type="text" id="name" placeholder="Enter your name">
         <button id="add-user">Add</button>
     </div>
-    <div id="user-list"></div>
-
-    <!-- Add Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+    <div id="user-list">
+        <!-- Users will appear here -->
+    </div>
 
     <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAUlLXs0QE-BdWsLP8svTXdATifO3vPTwE",
-            authDomain: "aa-matching-status.firebaseapp.com",
-            databaseURL: "https://aa-matching-status-default-rtdb.europe-west1.firebasedatabase.app/",
-            projectId: "aa-matching-status",
-            storageBucket: "aa-matching-status.appspot.com",
-            messagingSenderId: "1091110952452",
-            appId: "1:1091110952452:web:cbeb8b07369d0f137c5f51"
-        };
+        const addUserButton = document.getElementById('add-user');
+        const nameInput = document.getElementById('name');
+        const userList = document.getElementById('user-list');
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const users = []; // Array to hold user objects
 
-        // Add user to database
-        document.getElementById('add-user').addEventListener('click', () => {
-            const name = document.getElementById('name').value.trim();
+        function createTimerElement() {
+            const timerElement = document.createElement('span');
+            timerElement.classList.add('timer');
+            timerElement.textContent = '0s';
+            return timerElement;
+        }
+
+        function startTimer(timerElement) {
+            let seconds = 0;
+            timerElement.dataset.intervalId = setInterval(() => {
+                seconds++;
+                timerElement.textContent = `${seconds}s`;
+            }, 1000);
+        }
+
+        function stopTimer(timerElement) {
+            clearInterval(timerElement.dataset.intervalId);
+            timerElement.textContent = '0s';
+        }
+
+        addUserButton.addEventListener('click', () => {
+            const name = nameInput.value.trim();
             if (!name) {
-                alert('Please enter a valid name.');
+                alert('Please enter a name.');
                 return;
             }
-            db.ref('users').push({ name: name, status: 'Not Matching' });
-            document.getElementById('name').value = '';
-        });
 
-        // Listen for updates from Firebase
-        db.ref('users').on('value', (snapshot) => {
-            const users = snapshot.val();
-            const userList = document.getElementById('user-list');
-            userList.innerHTML = '';
-            for (const id in users) {
-                const user = users[id];
-                const div = document.createElement('div');
-                div.textContent = `${user.name} - ${user.status}`;
-                userList.appendChild(div);
-            }
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('user');
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = name;
+
+            const statusButton = document.createElement('button');
+            statusButton.textContent = 'Not Matching';
+            statusButton.classList.add('status', 'not-matching');
+
+            const timerElement = createTimerElement();
+
+            statusButton.addEventListener('click', () => {
+                if (statusButton.classList.contains('not-matching')) {
+                    statusButton.textContent = 'Matching';
+                    statusButton.classList.remove('not-matching');
+                    statusButton.classList.add('matching');
+                    startTimer(timerElement);
+                } else {
+                    statusButton.textContent = 'Not Matching';
+                    statusButton.classList.remove('matching');
+                    statusButton.classList.add('not-matching');
+                    stopTimer(timerElement);
+                }
+            });
+
+            userDiv.appendChild(nameSpan);
+            userDiv.appendChild(statusButton);
+            userDiv.appendChild(timerElement);
+            userList.appendChild(userDiv);
+
+            nameInput.value = '';
         });
     </script>
 </body>
